@@ -559,13 +559,19 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {requests.map((req) => (
-                  <tr key={req.id} className="hover:bg-white/5 transition-colors cursor-pointer group">
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center font-black text-brand uppercase text-xs">
-                          {req.studentName.charAt(0)}
-                        </div>
+                {requests.map((req) => {
+                   const student = students.find(s => s.id === req.studentId);
+                   return (
+                   <tr key={req.id} className="hover:bg-white/5 transition-colors cursor-pointer group">
+                     <td className="px-8 py-6">
+                       <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center font-black text-brand uppercase text-xs overflow-hidden">
+                           {student?.avatar ? (
+                             <img src={student.avatar} alt={req.studentName} className="w-full h-full object-cover" />
+                           ) : (
+                             req.studentName.charAt(0)
+                           )}
+                         </div>
                         <div>
                           <p className="font-bold">{req.studentName}</p>
                           <div className="flex items-center gap-2">
@@ -615,7 +621,8 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
                       </div>
                     </td>
                   </tr>
-                ))}
+                   );
+                 })}
               </tbody>
             </table>
           </div>

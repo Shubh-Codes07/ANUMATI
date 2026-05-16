@@ -26,7 +26,7 @@ async function initializeDatabase() {
         password VARCHAR(255),
         role VARCHAR(50) NOT NULL,
         phone VARCHAR(50),
-        avatar VARCHAR(500),
+        avatar LONGTEXT,
         department VARCHAR(100),
         roomNumber VARCHAR(50),
         hostelBlock VARCHAR(50),
