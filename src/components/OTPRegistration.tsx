@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, ShieldCheck, RotateCcw, ArrowLeft, Loader2 } from 'lucide-react';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 interface OTPRegistrationProps {
   /** Pre-filled email from the signup form (can be empty) */
