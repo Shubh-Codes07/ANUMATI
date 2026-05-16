@@ -259,7 +259,10 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
     <div className="min-h-screen bg-dark flex flex-col md:max-w-md md:mx-auto md:border-x md:border-dark-border">
       {/* Mobile Top Bar */}
       <div className="p-6 sticky top-0 z-20 bg-dark/80 backdrop-blur-md flex justify-between items-center">
-        <h1 className="text-xl font-display font-bold italic tracking-tight">ANU<span className="text-brand">MATI</span></h1>
+        <div className="flex items-center gap-2">
+          <img src="/logo.jpeg" alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
+          <h1 className="text-xl font-display font-bold italic tracking-tight">ANU<span className="text-brand">MATI</span></h1>
+        </div>
         <button 
           onClick={onBack} 
           className="px-4 py-2 rounded-xl glass border-red-500/20 text-red-500 flex items-center gap-2 hover:bg-red-500 hover:text-white transition-all shadow-[0_0_15px_rgba(239,68,68,0.1)]"

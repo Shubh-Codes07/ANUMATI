@@ -84,7 +84,10 @@ export default function SecurityDashboard({ onBack, user }: SecurityDashboardPro
   return (
     <div className="min-h-screen bg-dark text-white flex flex-col md:max-w-2xl md:mx-auto">
       <div className="p-6 flex justify-between items-center glass rounded-b-[2.5rem]">
-        <h1 className="text-xl font-black">Security Console</h1>
+        <div className="flex items-center gap-2">
+          <img src="/logo.jpeg" alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
+          <h1 className="text-xl font-black">Security Console</h1>
+        </div>
         <button onClick={onBack} className="px-4 py-2 rounded-xl glass text-red-400">Logout</button>
       </div>
 

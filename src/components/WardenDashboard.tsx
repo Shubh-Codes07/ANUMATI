@@ -297,8 +297,8 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
       <aside className="w-72 border-r border-dark-border hidden lg:flex flex-col p-8 space-y-8 glass rounded-r-[3rem]">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center">
-              <LayoutDashboard className="text-dark w-6 h-6" />
+            <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <span className="text-2xl font-display font-bold">ANU<span className="text-brand">MATI</span></span>
           </div>

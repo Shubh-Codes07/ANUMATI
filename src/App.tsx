@@ -60,7 +60,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-dark flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-brand border-t-transparent rounded-full animate-spin" />
+          <img src="/logo.jpeg" alt="Logo" className="w-12 h-12 rounded-full" />
           <p className="text-white/40 font-black uppercase tracking-widest text-xs">Initializing ANUMATI</p>
         </div>
       </div>

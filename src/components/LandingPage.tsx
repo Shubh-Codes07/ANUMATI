@@ -401,8 +401,8 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 glass py-4 px-6 md:px-12 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center neon-glow">
-            <Shield className="text-dark w-6 h-6" />
+          <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center neon-glow overflow-hidden">
+            <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="text-2xl font-display font-bold tracking-tight">ANU<span className="text-brand">MATI</span></span>
         </div>
@@ -654,8 +654,8 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       <footer className="py-12 border-t border-dark-border px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-              <Shield className="text-dark w-5 h-5" />
+            <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center overflow-hidden">
+              <img src="/logo.jpeg" alt="Logo" className="w-full h-full object-cover" />
             </div>
             <span className="text-xl font-display font-bold tracking-tight">ANU<span className="text-brand">MATI</span></span>
           </div>
