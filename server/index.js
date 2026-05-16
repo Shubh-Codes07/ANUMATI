@@ -15,6 +15,16 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// Verify transporter connection on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('❌ Email transporter error:', error.message);
+    console.error('📧 Check your EMAIL_USER and EMAIL_PASS in .env');
+  } else {
+    console.log('✅ Email transporter ready');
+  }
+});
+
 const app = express();
 
 app.use(cors({ origin: '*' }));
@@ -341,8 +351,10 @@ app.post('/api/auth/send-otp', async (req, res) => {
 
     res.json({ success: true, message: 'OTP sent successfully!' });
   } catch (error) {
-    console.error('Send OTP error:', error);
-    res.status(500).json({ success: false, message: 'Failed to send OTP. Check EMAIL_USER/EMAIL_PASS in .env.' });
+    console.error('Send OTP error:', error.message);
+    console.error('Full error:', error);
+    console.error('Email config - USER:', process.env.EMAIL_USER);
+    res.status(500).json({ success: false, message: `Failed to send OTP: ${error.message}` });
   }
 });
 
