@@ -37,7 +37,16 @@ export default function SecurityDashboard({ onBack, user }: SecurityDashboardPro
 
   const handleFound = async (code: string) => {
     // try to find leave by QR or id
-    const req = await LeaveService.getRequestByQr(code) || await LeaveService.getRequestById(code);
+    // Handle the GF-PASS- prefix from student portal
+    let searchCode = code;
+    if (code.startsWith('GF-PASS-')) {
+      searchCode = code.replace('GF-PASS-', '');
+    }
+
+    const req = await LeaveService.getRequestByQr(code) || 
+                await LeaveService.getRequestByQr(searchCode) || 
+                await LeaveService.getRequestById(searchCode);
+                
     if (!req) {
       alert('No leave request matched this code');
       return;

@@ -69,7 +69,16 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
 
   const handleScanFound = async (code: string) => {
     try {
-      const req = await LeaveService.getRequestByQr(code) || await LeaveService.getRequestById(code);
+      // Handle the GF-PASS- prefix from student portal
+      let searchCode = code;
+      if (code.startsWith('GF-PASS-')) {
+        searchCode = code.replace('GF-PASS-', '');
+      }
+
+      const req = await LeaveService.getRequestByQr(code) || 
+                  await LeaveService.getRequestByQr(searchCode) || 
+                  await LeaveService.getRequestById(searchCode);
+                  
       if (req) {
         setSelectedReq(req);
       } else {

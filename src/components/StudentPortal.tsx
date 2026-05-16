@@ -171,7 +171,7 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
               </div>
 
               <button 
-                onClick={() => setShowQR(activePass.id)}
+                onClick={() => setShowQR(activePass.qrCode || activePass.id)}
                 className="w-full bg-white text-black font-black uppercase py-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform tracking-widest text-sm"
               >
                 <QrCode className="w-5 h-5" /> Scan at Gate
@@ -330,7 +330,7 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                   <div className="pt-4 border-t border-white/5 flex justify-between items-center">
                     <p className="text-[10px] text-white/40 italic leading-snug flex-1">"{leave.reason}"</p>
                     {leave.status === 'approved' && (
-                      <button onClick={() => setShowQR(leave.id)} className="ml-4 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
+                      <button onClick={() => setShowQR(leave.qrCode || leave.id)} className="ml-4 w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand border border-brand/20">
                          <QrCode className="w-4 h-4" />
                       </button>
                     )}
