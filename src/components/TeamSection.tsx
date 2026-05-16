@@ -12,28 +12,32 @@ const teamMembers = [
     role: 'Lead Developer / Architect',
     branch: 'Info Science & Eng (2nd Year)',
     bio: 'The Architect. Turning sleepless nights into seamless code. Engineered the core RBAC security and routing protocols.',
-    image: '/srp.jpg'
+    image: '/srp.jpg',
+    background: '/srpbg.jpg'
   },
   {
     name: 'Swayam V Rajai',
     role: 'System Optimization',
     branch: 'Mechanical Eng (2nd Year)',
     bio: 'The Optimizer. Bringing mechanical precision to software execution. Ensuring the backend scales flawlessly under peak gate traffic.',
-    image: '/svr.jpg'
+    image: '/svr.jpg',
+    background: '/svrbg.jpg'
   },
   {
     name: 'Tanisha G Shinde',
     role: 'Product & UX Design',
     branch: 'Mechanical Eng (2nd Year)',
     bio: 'The Visionary. Designing user flows so smooth they feel frictionless. Mapped the visual identity and interaction states.',
-    image: '/tgs.jpg'
+    image: '/tgs.jpg',
+    background: '/tgsbg.jpg'
   },
   {
     name: 'Supriya A Kusabikal',
     role: 'Hardware/Software Integration',
     branch: 'Electronics & Comm (2nd Year)',
     bio: 'The Integrator. Bridging the gap between physical gates and digital packets. Managed the scanner logic and data payloads.',
-    image: '/sak.jpg'
+    image: '/sak.jpg',
+    background: '/sakbg.jpg'
   }
 ];
 
@@ -83,6 +87,12 @@ export default function TeamSection({ onClose }: TeamSectionProps) {
               transition={{ delay: 0.2 + (i * 0.1) }}
               className="glass p-8 rounded-[2.5rem] hover:-translate-y-2 group flex flex-col items-center text-center relative overflow-hidden"
             >
+              {/* Background with reduced opacity */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center opacity-30 pointer-events-none"
+                style={{ backgroundImage: `url(${member.background})` }}
+              />
+              
               {/* Card top border accent */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               
