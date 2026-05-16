@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  
+  --color-brand: #2563EB;
+  --color-brand-muted: rgba(59, 130, 246, 0.15);
+  --color-dark: #070A13;
+  --color-dark-surface: #0F1424;
+  --color-dark-card: #0F1424;
+  --color-dark-border: #1E2640;
+}
+
+@layer base {
+  body {
+    @apply bg-dark text-white font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight text-white;
+  }
+}
+
+.glass {
+  @apply bg-dark-card/60 backdrop-blur-3xl border border-dark-border transition-all duration-300;
+}
+
+.glass:hover {
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15) !important;
+}
+
+.neon-glow {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+}
+
+.neon-text {
+  @apply text-brand;
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.bold-heading {
+  @apply font-black tracking-tighter;
+}
+
+.italic-status {
+  @apply italic text-xs px-2 py-0.5 rounded;
+}
+
+/* Typography & Interactive Overrides */
+button.bg-brand, a.bg-brand, .btn-primary {
+  @apply font-display bg-brand text-white transition-all duration-300;
+  border-radius: 50px !important;
+  color: #ffffff !important;
+}
+
+button.bg-brand:hover, a.bg-brand:hover, .btn-primary:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+  transform: scale(1.02) !important;
+}
+
+tr, .card-box {
+  @apply transition-all duration-300;
+}
+
+tr:hover, .card-box:hover {
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15) !important;
+}
+
+table, input, textarea, .log-entry {
+  @apply font-sans;
+}
+
+/* Video Player Styles */
+.anumati-player {
+    position: relative;
+    max-width: 800px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #0F1424;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+}
+
+.anumati-player video {
+    width: 100%;
+    display: block;
+    cursor: pointer;
+}
+
+.player-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(13, 13, 13, 0.95));
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.anumati-player:hover .player-controls {
+    opacity: 1;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.control-btn:hover {
+    color: #3B82F6;
+}
+
+.progress-bar {
+    flex-grow: 1;
+    cursor: pointer;
+    accent-color: #3B82F6;
+}
+
+.time-display {
+    color: #e0e0e0;
+    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.skip-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.skip-btn:hover {
+    background: white;
+    color: black;
+}
