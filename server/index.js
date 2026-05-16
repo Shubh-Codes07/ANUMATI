@@ -326,37 +326,30 @@ app.post('/api/auth/send-otp', async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ success: false, message: 'Email is required.' });
 
+  // Generate a clean 6-digit OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date(Date.now() + 5 * 60000);
 
   try {
-    // Upsert into otps table
+    // Upsert into your Aiven cloud database so verification still works!
     await db.query(
       `INSERT INTO otps (email, otp, expires_at) VALUES (?, ?, ?)
        ON DUPLICATE KEY UPDATE otp = ?, expires_at = ?`,
       [email, otp, expiresAt, otp, expiresAt]
     );
 
-    await transporter.sendMail({
-      from: `"ANUMATI Security" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your ANUMATI Verification Code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 32px; background: #0d0d0d; color: #fff; border-radius: 16px;">
-          <h2 style="color: #3b82f6; margin-top: 0;">ANUMATI Registration</h2>
-          <p style="color: #aaa;">Your one-time verification code is:</p>
-          <div style="font-size: 48px; font-weight: 900; letter-spacing: 12px; color: #fff; margin: 24px 0;">${otp}</div>
-          <p style="color: #555; font-size: 12px;">This code expires in 5 minutes. Do not share it with anyone.</p>
-        </div>
-      `
-    });
+    // 🚨 HACKATHON CHEAT CODE: Print the OTP directly to the Render Console Logs!
+    console.log(`\n==================================================`);
+    console.log(`🔑 [DEMO OTP TRIGGERED]`);
+    console.log(`📧 EMAIL: ${email}`);
+    console.log(`🔢 YOUR 6-DIGIT CODE IS: ${otp}`);
+    console.log(`==================================================\n`);
 
-    res.json({ success: true, message: 'OTP sent successfully!' });
+    // Tell the frontend it was a success!
+    res.json({ success: true, message: 'OTP generated! (Check server console for demo code)' });
   } catch (error) {
     console.error('Send OTP error:', error.message);
-    console.error('Full error:', error);
-    console.error('Email config - USER:', process.env.EMAIL_USER);
-    res.status(500).json({ success: false, message: `Failed to send OTP: ${error.message}` });
+    res.status(500).json({ success: false, message: `Failed to generate OTP: ${error.message}` });
   }
 });
 
