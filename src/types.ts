@@ -21,7 +21,7 @@ export interface LeaveRequest {
   studentId: string;
   studentName: string;
   studentRoom: string;
-  type: 'home' | 'local' | 'vacation';
+  type: 'home' | 'local' | 'vacation' | 'Entry';
   startDate: string;
   endDate: string;
   reason: string;
@@ -36,7 +36,7 @@ export interface SecurityLog {
   id: string;
   studentId: string;
   studentName: string;
-  type: 'entry' | 'exit';
+  type: 'IN' | 'OUT';
   timestamp: string;
   gate: string;
   verifiedBy: string;

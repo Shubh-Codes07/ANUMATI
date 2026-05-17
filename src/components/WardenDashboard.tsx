@@ -149,7 +149,7 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
     today.setHours(0,0,0,0);
     return securityLogs.some(l => {
       if (l.studentId !== studentId) return false;
-      if (l.type !== 'exit') return false;
+      if (l.type !== 'OUT') return false;
       const t = new Date(l.timestamp);
       t.setHours(0,0,0,0);
       return t.getTime() === today.getTime();
@@ -165,13 +165,19 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
     const totalStudentsCount = students.length || 0;
     const inHostel = totalStudentsCount > 0 ? totalStudentsCount - onLeaveCount : 0;
 
+    // Count IN and OUT from security logs
+    const inCount = securityLogs.filter(l => l.type === 'IN').length;
+    const outCount = securityLogs.filter(l => l.type === 'OUT').length;
+
     return [
       { name: 'Total Applications Received', value: totalApplications, color: '#00E5FF' },
       { name: 'Approved', value: approved, color: '#00E676' },
       { name: 'Rejected', value: rejected, color: '#FF1744' },
+      { name: 'Campus Entries (IN)', value: inCount, color: '#0066FF' },
+      { name: 'Campus Exits (OUT)', value: outCount, color: '#FF6600' },
       { name: 'Students in Hostel', value: Math.max(0, inHostel), color: '#8884d8' },
     ];
-  }, [requests, students, isStudentOnLeave]);
+  }, [requests, students, isStudentOnLeave, securityLogs]);
 
   const pieChartData = useMemo(() => {
     const onLeaveCount = students.filter(s => isStudentOnLeave(s.id)).length;
@@ -333,11 +339,11 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
         <div className="mb-12">
           <h3 className="text-xl font-bold italic uppercase tracking-tighter mb-4">Recent Departures</h3>
           <div className="bg-zinc-900 border border-white/10 p-6 rounded-2xl">
-            {securityLogs && securityLogs.filter(l => l.type === 'exit').slice(0,5).length === 0 ? (
+            {securityLogs && securityLogs.filter(l => l.type === 'OUT').slice(0,5).length === 0 ? (
               <p className="text-white/40 text-sm">No departures recorded yet.</p>
             ) : (
               <div className="space-y-3">
-                {securityLogs.filter(l => l.type === 'exit').slice(0,5).map((log) => (
+                {securityLogs.filter(l => l.type === 'OUT').slice(0,5).map((log) => (
                   <div key={log.id} className="flex items-center justify-between p-3 bg-white/[0.02] rounded-lg">
                     <div>
                       <p className="font-bold">{log.studentName}</p>

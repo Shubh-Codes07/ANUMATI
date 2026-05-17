@@ -442,19 +442,45 @@ app.post('/api/auth/verify-otp', async (req, res) => {
 });
 
 // ─── Security Scan ───────────────────────────────────────────────────────────
-// POST /api/security/scan  (SMS Cheat Code: prints to server console)
+// POST /api/security/scan  - Process a scanned pass and log entry/exit
 app.post('/api/security/scan', async (req, res) => {
-  const { passId, studentName, parentPhone } = req.body;
+  const { passId, studentName, studentId, passType, parentPhone, verifiedBy } = req.body;
 
   try {
-    // TODO: mark gate_pass status as COMPLETED in DB
+    // Validate required fields
+    if (!passId || !studentId || !studentName) {
+      return res.status(400).json({ success: false, message: 'Missing required fields.' });
+    }
+
+    // Determine log type based on pass type
+    // Entry passes are logged as 'IN', others as 'OUT'
+    const logType = passType === 'Entry' ? 'IN' : 'OUT';
+    const logId = 'log_' + Date.now() + Math.random().toString(36).substring(2, 7);
+
+    // Insert into security_logs
+    await db.query(
+      'INSERT INTO security_logs (id, studentId, studentName, type, timestamp, gate, verifiedBy) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [logId, studentId, studentName, logType, new Date().toISOString(), 'Main Gate', verifiedBy || 'Guard']
+    );
+
+    // Log to console for testing/debugging
     console.log(`\n======================================================`);
-    console.log(`🟢 [SMS API TRIGGERED] -> Sending to: ${parentPhone}`);
-    console.log(`💬 MESSAGE: "ANUMATI Alert: ${studentName} has successfully exited the campus main gate at ${new Date().toLocaleTimeString()}."`);
+    console.log(`🟢 [GATE ACCESS LOGGED] ${logType}`);
+    console.log(`📌 Student: ${studentName} (${studentId})`);
+    console.log(`🎫 Pass Type: ${passType}`);
+    console.log(`⏰ Timestamp: ${new Date().toLocaleTimeString()}`);
     console.log(`======================================================\n`);
 
-    res.json({ success: true, message: 'Pass verified and parent notified.' });
+    // Send SMS notification if parent phone provided
+    if (parentPhone) {
+      const action = logType === 'IN' ? 'entered' : 'exited';
+      console.log(`\n📧 [SMS NOTIFICATION] -> ${parentPhone}`);
+      console.log(`💬 MESSAGE: "ANUMATI Alert: ${studentName} has ${action} the campus main gate at ${new Date().toLocaleTimeString()}."`);
+    }
+
+    res.json({ success: true, message: `Pass scanned. Logged as ${logType}.`, logId });
   } catch (error) {
+    console.error('Security scan error:', error);
     res.status(500).json({ success: false, message: 'Scan failed.' });
   }
 });

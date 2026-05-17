@@ -4,7 +4,7 @@ import {
   Home, QrCode, ClipboardList, User as UserIcon, Bell, 
   Search, MapPin, Calendar, Clock, ChevronRight,
   ArrowLeft, Upload, CheckCircle2, AlertCircle, X, LogOut,
-  UserCheck, Shield, Camera
+  UserCheck, Shield, Camera, Plus
 } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { User, LeaveRequest } from '../types';
@@ -26,6 +26,7 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [emergencyQR, setEmergencyQR] = useState<string | null>(null);
   const [isEmergencyLoading, setIsEmergencyLoading] = useState(false);
+  const [isEntryLoading, setIsEntryLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
@@ -83,6 +84,32 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
       alert('Emergency request failed: ' + (err?.message || 'Unknown error'));
     } finally {
       setIsEmergencyLoading(false);
+    }
+  };
+
+  const handleRequestEntry = async () => {
+    if (!confirm('Request campus entry?\n\nThis will create a pending entry request for warden approval.')) return;
+    setIsEntryLoading(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const request: Omit<LeaveRequest, 'id'> = {
+        studentId: user.id,
+        studentName: user.name,
+        studentRoom: user.roomNumber || 'N/A',
+        type: 'Entry',
+        startDate: today,
+        endDate: today,
+        reason: 'Campus Entry Request',
+        status: 'pending',
+        appliedAt: new Date().toISOString(),
+        appliedBy: 'student',
+      };
+      await LeaveService.applyLeave(request);
+      alert('✅ Entry request submitted! Awaiting warden approval.');
+    } catch (err: any) {
+      alert('Entry request failed: ' + (err?.message || 'Unknown error'));
+    } finally {
+      setIsEntryLoading(false);
     }
   };
 
@@ -221,18 +248,29 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
             <div className="w-12 h-12 rounded-2xl bg-brand-muted flex items-center justify-center text-brand">
               <ClipboardList className="w-6 h-6" />
             </div>
-            <span className="text-sm font-semibold">Apply Leave</span>
+            <span className="text-sm font-semibold">Exit Request</span>
           </button>
           <button 
-            onClick={() => setShowIDQR(true)}
-            className="glass p-5 rounded-3xl flex flex-col items-center gap-3 hover:border-brand/40 transition-colors"
+            onClick={handleRequestEntry}
+            disabled={isEntryLoading}
+            className="glass p-5 rounded-3xl flex flex-col items-center gap-3 hover:border-brand/40 transition-colors disabled:opacity-60"
           >
-            <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center text-brand">
-              <QrCode className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500">
+              <Plus className="w-6 h-6" />
             </div>
-            <span className="text-sm font-semibold">ID QR Code</span>
+            <span className="text-sm font-semibold">{isEntryLoading ? 'Requesting...' : 'Entry Request'}</span>
           </button>
         </div>
+
+        <button 
+          onClick={() => setShowIDQR(true)}
+          className="mt-4 w-full glass p-5 rounded-3xl flex items-center justify-center gap-3 hover:border-brand/40 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-brand/10 flex items-center justify-center text-brand">
+            <QrCode className="w-5 h-5" />
+          </div>
+          <span className="text-sm font-semibold">ID QR Code</span>
+        </button>
 
         {/* Medical Emergency Button */}
         <button

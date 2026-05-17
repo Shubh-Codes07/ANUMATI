@@ -13,6 +13,7 @@ export default function SecurityDashboard({ onBack, user }: SecurityDashboardPro
   const [logs, setLogs] = useState<SecurityLog[]>([]);
   const [lastScanned, setLastScanned] = useState<LeaveRequest | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     let unsub: any;
@@ -36,26 +37,49 @@ export default function SecurityDashboard({ onBack, user }: SecurityDashboardPro
   };
 
   const handleFound = async (code: string) => {
-    // try to find leave by QR or id
-    // Handle the GF-PASS- prefix from student portal
-    let searchCode = code;
-    if (code.startsWith('GF-PASS-')) {
-      searchCode = code.replace('GF-PASS-', '');
-    }
-
-    const req = await LeaveService.getRequestByQr(code) || 
-                await LeaveService.getRequestByQr(searchCode) || 
-                await LeaveService.getRequestById(searchCode);
-                
-    if (!req) {
-      alert('No leave request matched this code');
+    // Debounce: prevent processing if already processing
+    if (isProcessing) {
+      console.log('⏳ Scan in progress, ignoring duplicate...');
       return;
     }
-    setLastScanned(req);
+
+    // Set processing flag
+    setIsProcessing(true);
+
+    try {
+      // try to find leave by QR or id
+      // Handle the GF-PASS- prefix from student portal
+      let searchCode = code;
+      if (code.startsWith('GF-PASS-')) {
+        searchCode = code.replace('GF-PASS-', '');
+      }
+
+      const req = await LeaveService.getRequestByQr(code) || 
+                  await LeaveService.getRequestByQr(searchCode) || 
+                  await LeaveService.getRequestById(searchCode);
+                  
+      if (!req) {
+        alert('No leave request matched this code');
+      } else {
+        setLastScanned(req);
+      }
+    } catch (error) {
+      console.error('Scan error:', error);
+      alert('Error processing scan');
+    } finally {
+      // Reset processing flag after 4 seconds (4000ms)
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 4000);
+    }
   };
 
   const recordLog = async (req: LeaveRequest, type: 'entry' | 'exit') => {
     try {
+      // Determine log type based on pass type
+      // Entry passes are logged as 'IN', others as 'OUT'
+      const logType = req.type === 'Entry' ? 'IN' : 'OUT';
+
       // update leave status
       const nextStatus = type === 'exit' ? 'active' : 'approved';
       await LeaveService.updateRequestStatus(req.id, nextStatus);
@@ -64,7 +88,7 @@ export default function SecurityDashboard({ onBack, user }: SecurityDashboardPro
       const logEntry = {
         studentId: req.studentId,
         studentName: req.studentName,
-        type,
+        type: logType,
         timestamp: new Date().toISOString(),
         gate: 'Main Gate',
         verifiedBy: user.name
