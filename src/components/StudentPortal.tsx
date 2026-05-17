@@ -30,14 +30,12 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
+    avatar: user.avatar || '',
     usn: user.usn || '',
-    uid: user.uid || 'GF-' + user.id.slice(0, 8).toUpperCase(),
+    name: user.name || '',
     department: user.department || '',
     roomNumber: user.roomNumber || '',
-    phone: user.phone || '',
-    parentPhone: user.parentPhone || '',
-    address: user.address || '',
-    avatar: user.avatar || ''
+    phone: user.phone || ''
   });
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -492,32 +490,21 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                 </div>
 
                 {[
+                  { label: 'NAME', key: 'name', placeholder: 'Enter Your Name' },
                   { label: 'USN', key: 'usn', placeholder: 'Enter University Reg No' },
-                  { label: 'UID', key: 'uid', placeholder: 'Enter Identity ID' },
                   { label: 'DEPARTMENT', key: 'department', placeholder: 'Enter Branch/Dept' },
                   { label: 'HOSTEL ROOM NO', key: 'roomNumber', placeholder: 'Enter Block & Room' },
                   { label: 'CONTACT NO', key: 'phone', placeholder: 'Enter Phone' },
-                  { label: "PARENT'S CONTACT NO", key: 'parentPhone', placeholder: "Enter Parent's Phone" },
-                  { label: 'ADDRESS', key: 'address', placeholder: 'Enter Permanent Address', multi: true },
                 ].map((field) => (
                   <div key={field.key} className="space-y-2">
                     <label className="text-[8px] font-black text-white/40 uppercase tracking-widest block ml-2">{field.label}</label>
-                    {field.multi ? (
-                      <textarea 
-                        value={(profileData as any)[field.key]}
-                        onChange={(e) => setProfileData({...profileData, [field.key]: e.target.value})}
-                        className="w-full glass bg-transparent rounded-2xl p-4 text-sm font-bold focus:border-brand outline-none min-h-[100px]"
-                        placeholder={field.placeholder}
-                      />
-                    ) : (
-                      <input 
-                        type="text"
-                        value={(profileData as any)[field.key]}
-                        onChange={(e) => setProfileData({...profileData, [field.key]: e.target.value})}
-                        className="w-full glass bg-transparent rounded-2xl p-4 text-sm font-bold focus:border-brand outline-none"
-                        placeholder={field.placeholder}
-                      />
-                    )}
+                    <input 
+                      type="text"
+                      value={(profileData as any)[field.key]}
+                      onChange={(e) => setProfileData({...profileData, [field.key]: e.target.value})}
+                      className="w-full glass bg-transparent rounded-2xl p-4 text-sm font-bold focus:border-brand outline-none"
+                      placeholder={field.placeholder}
+                    />
                   </div>
                 ))}
 
