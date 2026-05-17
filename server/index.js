@@ -35,51 +35,66 @@ app.use(express.json());
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { email, password, name, phone, preferredRole } = req.body;
+    const { email, password } = req.body;
 
-    const ADMIN_EMAIL = 'swayam2005raje@gmail.com';
-    const ADMIN_PASS  = 'TechTorque';
-
-      const GUARD_EMAIL = process.env.GUARD_EMAIL || 'guard@codegate.local';
-      const GUARD_PASS = process.env.GUARD_PASS || 'GuardPass123';
-
-    let role = preferredRole || 'student';
-
-    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      if (preferredRole && preferredRole !== 'warden') {
-        return res.status(403).json({ error: 'You do not have access to this' });
-      }
-      if (password && password !== ADMIN_PASS) {
-        return res.status(401).json({ error: 'Invalid password for Admin account.' });
-      }
-      role = 'warden';
-    } else if (email.toLowerCase() === GUARD_EMAIL.toLowerCase()) {
-      if (password && password !== GUARD_PASS) {
-        return res.status(401).json({ error: 'Invalid password for Guard account.' });
-      }
-      role = 'guard';
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-    let user = rows[0];
+    const WARDEN_EMAIL = 'admin@gmail.com';
+    const WARDEN_PASS = 'TechTorque';
+    const GUARD_EMAIL = 'guard@codegate.local';
+    const GUARD_PASS = 'GuardPass123';
 
-    if (!user) {
-      const userId = 'user_' + Date.now() + Math.random().toString(36).substring(7);
-      user = {
-        id:     userId,
-        name:   name || email.split('@')[0],
-        email:  email,
-        role:   role,
-        phone:  phone || null,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (name || userId)
+    // ─── Warden Authentication ──────────────────────────────────────────────
+    if (email.toLowerCase() === WARDEN_EMAIL.toLowerCase()) {
+      if (password !== WARDEN_PASS) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const wardenUser = {
+        id: 'warden_001',
+        name: 'Warden',
+        email: WARDEN_EMAIL,
+        role: 'warden',
+        phone: null,
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=warden'
       };
-
-      await db.query(
-        'INSERT INTO users (id, name, email, password, role, phone, avatar) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [user.id, user.name, user.email, password || null, user.role, user.phone, user.avatar]
-      );
+      return res.json(wardenUser);
     }
 
+    // ─── Guard/Security Authentication ───────────────────────────────────────
+    if (email.toLowerCase() === GUARD_EMAIL.toLowerCase()) {
+      if (password !== GUARD_PASS) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      const guardUser = {
+        id: 'guard_001',
+        name: 'Security Guard',
+        email: GUARD_EMAIL,
+        role: 'guard',
+        phone: null,
+        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=guard'
+      };
+      return res.json(guardUser);
+    }
+
+    // ─── Student Authentication ──────────────────────────────────────────────
+    // Query database for the student
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    const user = rows[0];
+
+    // If student does not exist, return 404
+    if (!user) {
+      return res.status(404).json({ error: 'Account not registered' });
+    }
+
+    // Verify password
+    if (user.password !== password) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Return user object
     res.json(user);
   } catch (error) {
     console.error('Login error:', error);
