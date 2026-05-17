@@ -28,14 +28,29 @@ export const UserService = {
 
   async updateUser(userId: string, data: Partial<User>) {
     try {
+      const fullUrl = API_URL + '/users/' + userId;
+      console.log('📤 API URL:', fullUrl);
       console.log('📤 Sending profile update:', { userId, data });
-      const response = await fetch(API_URL + '/users/' + userId, {
+      
+      const response = await fetch(fullUrl, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
       
-      const result = await response.json();
+      console.log(`📡 Response status: ${response.status} ${response.statusText}`);
+      console.log(`📡 Content-Type: ${response.headers.get('content-type')}`);
+      
+      const responseText = await response.text();
+      console.log('📡 Response body (first 200 chars):', responseText.substring(0, 200));
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('🔴 Failed to parse JSON response:', parseError);
+        throw new Error(`Invalid server response (expected JSON, got ${response.headers.get('content-type')}). Check if backend is running on ${fullUrl}`);
+      }
       
       if (response.ok) {
         console.log('✅ Update successful:', result);
