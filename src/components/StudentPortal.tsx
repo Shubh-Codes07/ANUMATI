@@ -505,10 +505,13 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                   onClick={async () => {
                     setIsSubmitting(true);
                     const { UserService } = await import('../lib/userService');
-                    await UserService.updateUser(user.id, profileData);
+                    const updatedUser = await UserService.updateUser(user.id, profileData);
+                    if (updatedUser) {
+                      const { AuthService } = await import('../lib/authService');
+                      AuthService.updateCurrentUser(updatedUser);
+                    }
                     setIsSubmitting(false);
                     setShowProfileEdit(false);
-                    // Refresh parent if needed (usually handled by provider but manual here for simplicity)
                   }}
                   className="w-full bg-brand text-dark font-black uppercase py-6 rounded-3xl tracking-[0.2em] text-sm mt-4 shadow-[0_10px_30px_rgba(59,130,246,0.2)]"
                   disabled={isSubmitting}

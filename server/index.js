@@ -143,7 +143,10 @@ app.put('/api/users/:id', async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ success: true });
+    
+    // Fetch and return the updated user object
+    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    res.json(rows[0]);
   } catch (error) {
     console.error('Update user error:', error);
     res.status(500).json({ error: 'Internal server error' });

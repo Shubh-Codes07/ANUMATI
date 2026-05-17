@@ -58,6 +58,11 @@ export const AuthService = {
     notifyAuthObservers(null);
   },
 
+  updateCurrentUser(user: User) {
+    localStorage.setItem('codegate_user', JSON.stringify(user));
+    notifyAuthObservers(user);
+  },
+
   onAuthUpdate(callback: AuthCallback) {
     authObservers.push(callback);
 

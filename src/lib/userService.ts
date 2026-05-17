@@ -33,10 +33,13 @@ export const UserService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      return response.ok;
+      if (response.ok) {
+        return await response.json();
+      }
+      return null;
     } catch (error) {
       console.error(error);
-      return false;
+      return null;
     }
   },
 

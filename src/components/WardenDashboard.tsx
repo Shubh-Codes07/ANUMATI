@@ -500,11 +500,14 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-10">
               {students.map(student => (
-                <div key={student.id} onClick={() => setSelectedStudent(student)} className="bg-white/[0.02] border border-white/5 p-6 rounded-[2.5rem] hover:border-brand/40 transition-all cursor-pointer group">
+                <div key={student.id} onClick={async () => {
+                  const fullData = await UserService.getUserById(student.id);
+                  setSelectedStudent(fullData || student);
+                }} className="bg-white/[0.02] border border-white/5 p-6 rounded-[2.5rem] hover:border-brand/40 transition-all cursor-pointer group">
                   <div className="flex items-start justify-between mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center overflow-hidden">
                       {student.avatar ? (
-                        <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
+                        <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       ) : (
                         <UserCircle className="w-8 h-8 text-brand" />
                       )}
@@ -684,7 +687,7 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
               <div className="flex flex-col items-center mb-8 text-center">
                 <div className="w-28 h-28 rounded-[2.5rem] bg-brand/10 border border-brand/20 p-2 mb-4">
                   <div className="w-full h-full rounded-[2rem] bg-brand/20 flex items-center justify-center overflow-hidden">
-                    {selectedStudent.avatar ? <img src={selectedStudent.avatar} alt="" className="w-full h-full object-cover" /> : <Users className="w-10 h-10 text-brand" />}
+                    {selectedStudent.avatar ? <img src={selectedStudent.avatar} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <Users className="w-10 h-10 text-brand" />}
                   </div>
                 </div>
                 <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-1">{selectedStudent.name}</h2>
