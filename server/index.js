@@ -32,6 +32,15 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
+// ─── Health Check ─────────────────────────────────────────────────────────────
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', server: 'Anumati Backend', port: process.env.PORT || 3001 });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', database: db ? 'connected' : 'disconnected' });
+});
+
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -515,6 +524,18 @@ app.post('/api/admin/wipe-all-data', async (req, res) => {
     console.error('Wipe all data error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// ─── 404 Handler ──────────────────────────────────────────────────────────────
+app.use((req, res) => {
+  console.warn(`⚠️ 404 - Route not found: ${req.method} ${req.path}`);
+  res.status(404).json({ error: 'Route not found', method: req.method, path: req.path });
+});
+
+// ─── Error Handler ────────────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error('🔴 Uncaught error:', err);
+  res.status(500).json({ error: 'Server error', message: err.message });
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────

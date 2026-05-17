@@ -38,18 +38,29 @@ export const UserService = {
         body: JSON.stringify(data)
       });
       
+      const contentType = response.headers.get('content-type') || 'unknown';
       console.log(`📡 Response status: ${response.status} ${response.statusText}`);
-      console.log(`📡 Content-Type: ${response.headers.get('content-type')}`);
+      console.log(`📡 Content-Type: ${contentType}`);
       
       const responseText = await response.text();
-      console.log('📡 Response body (first 200 chars):', responseText.substring(0, 200));
+      console.log('📡 Response body (first 300 chars):', responseText.substring(0, 300));
+      
+      // Check if response is HTML (error page from Render/server)
+      if (contentType.includes('text/html') || responseText.includes('<!DOCTYPE')) {
+        console.error('🔴 Backend returned HTML instead of JSON');
+        console.error('This usually means:');
+        console.error('1. Backend server crashed or failed to start');
+        console.error('2. Database connection failed on Render');
+        console.error('3. API endpoint does not exist');
+        throw new Error(`Backend error: Server returned HTML. Check Render dashboard logs for backend deployment status.`);
+      }
       
       let result;
       try {
         result = JSON.parse(responseText);
       } catch (parseError) {
         console.error('🔴 Failed to parse JSON response:', parseError);
-        throw new Error(`Invalid server response (expected JSON, got ${response.headers.get('content-type')}). Check if backend is running on ${fullUrl}`);
+        throw new Error(`Invalid JSON response from backend. Response: ${responseText.substring(0, 100)}`);
       }
       
       if (response.ok) {
