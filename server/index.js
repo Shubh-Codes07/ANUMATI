@@ -188,18 +188,24 @@ app.get('/api/users', async (req, res) => {
 app.put('/api/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
-    const keys = Object.keys(updates);
+    const updates = req.body || {};
 
-    console.log(`📝 Update request for user ${id}:`, keys);
+    const allowedFields = ['avatar', 'name', 'phone', 'usn', 'roomNumber', 'address', 'department', 'parentPhone'];
+    const filteredUpdates = Object.entries(updates)
+      .filter(([key]) => allowedFields.includes(key))
+      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {} as Record<string, unknown>);
+
+    const keys = Object.keys(filteredUpdates);
+
+    console.log(`📝 Update request for user ${id}:`, Object.keys(updates), 'filtered to:', keys);
 
     if (keys.length === 0) {
-      console.log(`⚠️ No fields to update for user ${id}`);
-      return res.status(400).json({ error: 'No fields to update' });
+      console.log(`⚠️ No updatable fields provided for user ${id}`);
+      return res.status(400).json({ error: 'No valid fields to update' });
     }
 
-    const setClause = keys.map(k => k + ' = ?').join(', ');
-    const values = [...Object.values(updates), id];
+    const setClause = keys.map(k => `${k} = ?`).join(', ');
+    const values = [...Object.values(filteredUpdates), id];
     const sql = 'UPDATE users SET ' + setClause + ' WHERE id = ?';
 
     console.log(`🔄 Executing SQL: ${sql}`);
@@ -212,7 +218,6 @@ app.put('/api/users/:id', async (req, res) => {
 
     console.log(`✅ Updated ${result.affectedRows} row(s) for user ${id}`);
     
-    // Fetch and return the updated user object
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
     console.log(`📤 Returning updated user:`, rows[0]);
     res.json(rows[0]);
