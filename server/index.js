@@ -193,7 +193,7 @@ app.put('/api/users/:id', async (req, res) => {
     const allowedFields = ['avatar', 'name', 'phone', 'usn', 'roomNumber', 'address', 'department', 'parentPhone'];
     const filteredUpdates = Object.entries(updates)
       .filter(([key]) => allowedFields.includes(key))
-      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {} as Record<string, unknown>);
+      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
 
     const keys = Object.keys(filteredUpdates);
 
