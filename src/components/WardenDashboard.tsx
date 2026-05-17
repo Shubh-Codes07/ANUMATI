@@ -7,7 +7,7 @@ import {
   ShieldCheck, Plus, UserCircle, Phone, Home, Building
 } from 'lucide-react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
+  BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, 
   ResponsiveContainer, Cell, Legend 
 } from 'recharts';
 import { User, LeaveRequest, SecurityLog } from '../types';
@@ -173,6 +173,18 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
     ];
   }, [requests, students, isStudentOnLeave]);
 
+  const pieChartData = useMemo(() => {
+    const onLeaveCount = students.filter(s => isStudentOnLeave(s.id)).length;
+    const totalStudentsCount = students.length || 0;
+    const inHostel = totalStudentsCount > 0 ? totalStudentsCount - onLeaveCount : 0;
+
+    return [
+      { name: 'Total Students', value: totalStudentsCount, color: '#00E5FF' },
+      { name: 'Students Out', value: onLeaveCount, color: '#FF1744' },
+      { name: 'Students In Hostel', value: inHostel, color: '#00E676' },
+    ];
+  }, [students, isStudentOnLeave]);
+
   const handleAddStudent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -204,10 +216,18 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
 
   const handleWipeAll = async () => {
     setIsSubmitting(true);
-    await UserService.wipeAllStudents();
-    setConfirmWipe(false);
-    setIsSubmitting(false);
-    loadStudents();
+    try {
+      await UserService.wipeAllStudents();
+      // Reset state variables
+      setStudents([]);
+      setRequests([]);
+      setSecurityLogs([]);
+      setConfirmWipe(false);
+    } catch (error) {
+      console.error('Wipe failed:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleWardenApplyLeave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -411,30 +431,39 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-zinc-900 border border-white/10 p-10 rounded-[3rem]">
-                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-8">Leave Distribution</h3>
+                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-8">Student Distribution</h3>
                 <div className="h-[400px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analyticsData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                      <XAxis 
-                        dataKey="name" 
-                        stroke="#666" 
-                        fontSize={12} 
-                        tickLine={false} 
-                        axisLine={false}
-                      />
-                      <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '16px' }}
-                        itemStyle={{ fontWeight: 'bold' }}
-                      />
-                      <Bar dataKey="value" radius={[10, 10, 0, 0]} barSize={60}>
-                        {analyticsData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {pieChartData.reduce((sum, d) => sum + d.value, 0) === 0 ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <p className="text-white/40 text-sm">No student data available</p>
+                        <p className="text-white/20 text-xs mt-2">Add students to see the distribution chart</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={pieChartData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, value }) => `${name}: ${value}`}
+                          outerRadius={120}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {pieChartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '16px' }}
+                          itemStyle={{ fontWeight: 'bold' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </div>
 

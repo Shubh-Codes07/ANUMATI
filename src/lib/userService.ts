@@ -73,9 +73,11 @@ export const UserService = {
 
   async wipeAllStudents() {
     try {
-      const students = await this.getAllStudents();
-      await Promise.all(students.map(s => this.deleteUser(s.id)));
-      return true;
+      const response = await fetch(API_URL + '/admin/wipe-all-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response.ok;
     } catch (error) {
       console.error(error);
       return false;

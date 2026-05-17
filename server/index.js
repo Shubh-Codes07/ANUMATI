@@ -415,6 +415,28 @@ app.post('/api/security/scan', async (req, res) => {
   }
 });
 
+// ─── Admin: Wipe All Data ─────────────────────────────────────────────────────
+app.post('/api/admin/wipe-all-data', async (req, res) => {
+  try {
+    // Delete all leaves
+    await db.query('DELETE FROM leaves');
+    
+    // Delete all security logs
+    await db.query('DELETE FROM security_logs');
+    
+    // Delete all OTPs
+    await db.query('DELETE FROM otps');
+    
+    // Delete all student users (role = 'student')
+    await db.query("DELETE FROM users WHERE role = 'student'");
+    
+    res.json({ success: true, message: 'All data wiped successfully' });
+  } catch (error) {
+    console.error('Wipe all data error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
