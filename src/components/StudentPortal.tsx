@@ -525,18 +525,20 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                   onClick={async () => {
                     setIsSubmitting(true);
                     try {
+                      console.log('🔄 Starting profile update...');
                       const { UserService } = await import('../lib/userService');
                       const updatedUser = await UserService.updateUser(user.id, profileData);
                       if (updatedUser) {
+                        console.log('✅ Update response received:', updatedUser);
                         const { AuthService } = await import('../lib/authService');
                         AuthService.updateCurrentUser(updatedUser);
                         alert('✅ Profile updated successfully! Changes will sync to Warden Dashboard.');
                         setShowProfileEdit(false);
-                      } else {
-                        alert('❌ Failed to update profile. Please try again.');
                       }
-                    } catch (error) {
-                      alert('❌ Error updating profile: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                    } catch (error: any) {
+                      const errorMessage = error?.message || 'Unknown error occurred';
+                      console.error('❌ Profile update error:', errorMessage);
+                      alert('❌ Update failed: ' + errorMessage + '\n\nCheck console for details.');
                     } finally {
                       setIsSubmitting(false);
                     }

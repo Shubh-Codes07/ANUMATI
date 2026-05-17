@@ -28,18 +28,26 @@ export const UserService = {
 
   async updateUser(userId: string, data: Partial<User>) {
     try {
+      console.log('📤 Sending profile update:', { userId, data });
       const response = await fetch(API_URL + '/users/' + userId, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
+      
+      const result = await response.json();
+      
       if (response.ok) {
-        return await response.json();
+        console.log('✅ Update successful:', result);
+        return result;
+      } else {
+        console.error('❌ Update failed:', response.status, result);
+        throw new Error(result.error || `Server error: ${response.status}`);
       }
-      return null;
     } catch (error) {
-      console.error(error);
-      return null;
+      const errorMsg = error instanceof Error ? error.message : 'Network error or server unreachable';
+      console.error('🔴 Update error:', errorMsg);
+      throw new Error(errorMsg);
     }
   },
 

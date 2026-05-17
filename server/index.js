@@ -168,29 +168,39 @@ app.get('/api/users', async (req, res) => {
 
 app.put('/api/users/:id', async (req, res) => {
   try {
-    const { id }    = req.params;
-    const updates   = req.body;
-    const keys      = Object.keys(updates);
+    const { id } = req.params;
+    const updates = req.body;
+    const keys = Object.keys(updates);
+
+    console.log(`📝 Update request for user ${id}:`, keys);
 
     if (keys.length === 0) {
+      console.log(`⚠️ No fields to update for user ${id}`);
       return res.status(400).json({ error: 'No fields to update' });
     }
 
     const setClause = keys.map(k => k + ' = ?').join(', ');
-    const values    = [...Object.values(updates), id];
-    const sql       = 'UPDATE users SET ' + setClause + ' WHERE id = ?';
+    const values = [...Object.values(updates), id];
+    const sql = 'UPDATE users SET ' + setClause + ' WHERE id = ?';
 
+    console.log(`🔄 Executing SQL: ${sql}`);
     const [result] = await db.query(sql, values);
+    
     if (result.affectedRows === 0) {
+      console.log(`❌ User not found: ${id}`);
       return res.status(404).json({ error: 'User not found' });
     }
+
+    console.log(`✅ Updated ${result.affectedRows} row(s) for user ${id}`);
     
     // Fetch and return the updated user object
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    console.log(`📤 Returning updated user:`, rows[0]);
     res.json(rows[0]);
   } catch (error) {
-    console.error('Update user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('🔴 Update user error:', error.message);
+    console.error('Full error:', error);
+    res.status(500).json({ error: 'Internal server error: ' + error.message });
   }
 });
 
