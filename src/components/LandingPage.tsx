@@ -10,7 +10,7 @@ import OTPRegistration from './OTPRegistration';
 import TeamSection from './TeamSection';
 
 interface LandingPageProps {
-  onStart: (role: any, credentials?: { name: string, email: string, password?: string, phone?: string }) => void;
+  onStart: (role: any, credentials?: { name: string, email: string, password?: string, phone?: string }) => Promise<void>;
 }
 
 const VideoIntro = ({ onFinish }: { onFinish: () => void }) => {
@@ -171,7 +171,9 @@ export default function LandingPage({ onStart }: LandingPageProps) {
     setAuthModal({ role: pendingSignupRole, step: 2, mode: 'signup' });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const emailInput = form.querySelector('input[placeholder="Email Address"]') as HTMLInputElement;
@@ -186,22 +188,39 @@ export default function LandingPage({ onStart }: LandingPageProps) {
 
     if (authModal?.mode === 'signup') {
       if (!name || !normalizedEmail || !normalizedPassword || !phone) {
-        setError('Please fill all military-grade fields including phone number');
+        setError('Please fill all required fields including phone number.');
         return;
       }
     } else {
       if (!normalizedEmail || !normalizedPassword) {
-        setError('Credentials required for access');
+        setError('Email and password are required.');
         return;
       }
     }
 
-    onStart(authModal?.role || 'student', {
-      name: name || formData.name,
-      email: normalizedEmail,
-      password: normalizedPassword,
-      phone
-    });
+    setError('');
+    setIsLoggingIn(true);
+    try {
+      await onStart(authModal?.role || 'student', {
+        name: name || formData.name,
+        email: normalizedEmail,
+        password: normalizedPassword,
+        phone
+      });
+    } catch (err: any) {
+      const msg = err?.message || '';
+      if (msg.includes('Authentication denied') || msg.includes('not registered') || msg.includes('Account not registered')) {
+        setError('⛔ Authentication Denied — No account found for this email.');
+      } else if (msg.includes('Unauthorized') || msg.includes('password')) {
+        setError('🔒 Invalid email or password. Please try again.');
+      } else if (msg.includes('role') || msg.includes('restricted')) {
+        setError('🚫 Authentication Denied — You are not authorized for this portal.');
+      } else {
+        setError(msg || '❌ Login failed. Please check your credentials.');
+      }
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -385,9 +404,10 @@ export default function LandingPage({ onStart }: LandingPageProps) {
 
                   <button 
                     type="submit"
-                    className="w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-sm tracking-widest hover:scale-[1.02] active:scale-95 transition-all"
+                    disabled={isLoggingIn}
+                    className="w-full bg-white text-black py-5 rounded-2xl font-black uppercase text-sm tracking-widest hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-60 disabled:scale-100 disabled:cursor-not-allowed"
                   >
-                    {authModal.mode === 'signup' ? 'Direct Sign-In & Create Account' : 'Verify Credentials & Login'}
+                    {isLoggingIn ? 'Verifying...' : authModal.mode === 'signup' ? 'Create Account' : 'Verify Credentials & Login'}
                   </button>
                   
                   {authModal.role !== 'warden' && authModal.role !== 'admin' && authModal.role !== 'guard' && (

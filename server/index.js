@@ -50,7 +50,7 @@ app.post('/api/auth/login', async (req, res) => {
     // ─── Warden Authentication ──────────────────────────────────────────────
     if (email.toLowerCase() === WARDEN_EMAIL.toLowerCase()) {
       if (password !== WARDEN_PASS) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Invalid email or password. Please try again.' });
       }
       const wardenUser = {
         id: 'warden_001',
@@ -66,7 +66,7 @@ app.post('/api/auth/login', async (req, res) => {
     // ─── Guard/Security Authentication ───────────────────────────────────────
     if (email.toLowerCase() === GUARD_EMAIL.toLowerCase()) {
       if (password !== GUARD_PASS) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({ error: 'Invalid email or password. Please try again.' });
       }
       const guardUser = {
         id: 'guard_001',
@@ -86,12 +86,12 @@ app.post('/api/auth/login', async (req, res) => {
 
     // If student does not exist, return 404
     if (!user) {
-      return res.status(404).json({ error: 'Account not registered' });
+      return res.status(404).json({ error: 'Account not registered. Please sign up first.' });
     }
 
     // Verify password
     if (user.password !== password) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Invalid email or password. Please try again.' });
     }
 
     // Return user object

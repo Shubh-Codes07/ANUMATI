@@ -35,7 +35,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = async (preferredRole?: UserRole, credentials?: { name: string, email: string, password?: string, phone?: string }) => {
+  const handleLogin = async (preferredRole?: UserRole, credentials?: { name: string, email: string, password?: string, phone?: string }): Promise<void> => {
     try {
       let loggedUser;
       if (credentials) {
@@ -43,10 +43,17 @@ export default function App() {
       } else {
         loggedUser = await AuthService.signInWithGoogle(preferredRole);
       }
+
+      // Role guard: if trying to access warden/guard/admin portal with a student account
+      if ((preferredRole === 'warden' || preferredRole === 'guard' || preferredRole === 'admin') && loggedUser.role === 'student') {
+        throw new Error('Authentication denied — Students are not authorized for this portal.');
+      }
+
       setUser(loggedUser);
       setCurrentView(loggedUser.role);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed", error);
+      throw error;
     }
   };
 
