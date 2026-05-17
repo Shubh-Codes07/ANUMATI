@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Users, ClipboardList, AlertCircle, Search, Filter, 
   CheckCircle2, XCircle, MoreVertical, LayoutDashboard,
-  LogOut, Settings, PieChart, Database, MapPin, 
+  LogOut, Settings, PieChart as PieChartIcon, Database, MapPin, 
   ShieldCheck, Plus, UserCircle, Phone, Home, Building
 } from 'lucide-react';
 import { 
@@ -356,7 +356,7 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
             { icon: LayoutDashboard, label: 'Overview', id: 'pending', active: activeTab === 'pending' },
             { icon: ClipboardList, label: 'Control Center', id: 'all', active: activeTab === 'all' },
             { icon: Users, label: 'Student Records', id: 'students', active: activeTab === 'students' },
-            { icon: PieChart, label: 'Analytics', id: 'analytics', active: activeTab === 'analytics' },
+            { icon: PieChartIcon, label: 'Analytics', id: 'analytics', active: activeTab === 'analytics' },
           ].map((item, i) => (
             <button 
               key={i} 

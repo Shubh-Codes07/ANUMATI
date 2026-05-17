@@ -102,6 +102,47 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// ─── Auth: Signup ─────────────────────────────────────────────────────────────
+app.post('/api/auth/signup', async (req, res) => {
+  try {
+    const { name, email, password, phone } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email and password are required.' });
+    }
+
+    // Check if email already exists
+    const [existing] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(409).json({ error: 'An account with this email already exists. Please log in instead.' });
+    }
+
+    const userId = 'stu_' + Date.now() + Math.random().toString(36).substring(2, 7);
+
+    await db.query(
+      'INSERT INTO users (id, name, email, password, role, phone) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, name, email, password, 'student', phone || null]
+    );
+
+    const newUser = {
+      id: userId,
+      name,
+      email,
+      role: 'student',
+      phone: phone || null,
+      avatar: null,
+      department: null,
+      roomNumber: null,
+      usn: null
+    };
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.status(500).json({ error: 'Internal server error during signup.' });
+  }
+});
+
 // ─── Users ────────────────────────────────────────────────────────────────────
 app.get('/api/users', async (req, res) => {
   try {

@@ -35,24 +35,45 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = async (preferredRole?: UserRole, credentials?: { name: string, email: string, password?: string, phone?: string }): Promise<void> => {
+  const handleLogin = async (
+    preferredRole?: UserRole,
+    credentials?: { name: string; email: string; password?: string; phone?: string },
+    mode: 'login' | 'signup' = 'login'
+  ): Promise<void> => {
     try {
       let loggedUser;
-      if (credentials) {
-        loggedUser = await AuthService.manualLoginOrSignup(preferredRole || 'student', credentials);
+
+      if (mode === 'signup') {
+        // Register new student account then auto-log in
+        loggedUser = await AuthService.signup({
+          name: credentials!.name,
+          email: credentials!.email,
+          password: credentials!.password,
+          phone: credentials!.phone,
+        });
+      } else if (credentials) {
+        // Log in existing user
+        loggedUser = await AuthService.login({
+          email: credentials.email,
+          password: credentials.password,
+        });
       } else {
         loggedUser = await AuthService.signInWithGoogle(preferredRole);
       }
 
-      // Role guard: if trying to access warden/guard/admin portal with a student account
-      if ((preferredRole === 'warden' || preferredRole === 'guard' || preferredRole === 'admin') && loggedUser.role === 'student') {
-        throw new Error('Authentication denied — Students are not authorized for this portal.');
+      // Role guard: block students from warden/guard/admin portals
+      if (
+        mode === 'login' &&
+        (preferredRole === 'warden' || preferredRole === 'guard' || preferredRole === 'admin') &&
+        loggedUser.role === 'student'
+      ) {
+        throw new Error('Authentication Denied — Students are not authorized for this portal.');
       }
 
       setUser(loggedUser);
       setCurrentView(loggedUser.role);
     } catch (error: any) {
-      console.error("Login failed", error);
+      console.error('Login failed', error);
       throw error;
     }
   };

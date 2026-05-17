@@ -10,7 +10,7 @@ import OTPRegistration from './OTPRegistration';
 import TeamSection from './TeamSection';
 
 interface LandingPageProps {
-  onStart: (role: any, credentials?: { name: string, email: string, password?: string, phone?: string }) => Promise<void>;
+  onStart: (role: any, credentials?: { name: string, email: string, password?: string, phone?: string }, mode?: 'login' | 'signup') => Promise<void>;
 }
 
 const VideoIntro = ({ onFinish }: { onFinish: () => void }) => {
@@ -201,19 +201,20 @@ export default function LandingPage({ onStart }: LandingPageProps) {
     setError('');
     setIsLoggingIn(true);
     try {
-      await onStart(authModal?.role || 'student', {
-        name: name || formData.name,
-        email: normalizedEmail,
-        password: normalizedPassword,
-        phone
-      });
+      await onStart(
+        authModal?.role || 'student',
+        { name: name || formData.name, email: normalizedEmail, password: normalizedPassword, phone },
+        authModal?.mode || 'login'
+      );
     } catch (err: any) {
       const msg = err?.message || '';
-      if (msg.includes('Authentication denied') || msg.includes('not registered') || msg.includes('Account not registered')) {
-        setError('⛔ Authentication Denied — No account found for this email.');
-      } else if (msg.includes('Unauthorized') || msg.includes('password')) {
+      if (msg.includes('already exists')) {
+        setError('⚠️ An account with this email already exists. Please log in instead.');
+      } else if (msg.includes('not registered') || msg.includes('Account not registered')) {
+        setError('⛔ No account found for this email. Please sign up first.');
+      } else if (msg.includes('Invalid email or password') || msg.includes('password')) {
         setError('🔒 Invalid email or password. Please try again.');
-      } else if (msg.includes('role') || msg.includes('restricted')) {
+      } else if (msg.includes('Authentication Denied') || msg.includes('not authorized')) {
         setError('🚫 Authentication Denied — You are not authorized for this portal.');
       } else {
         setError(msg || '❌ Login failed. Please check your credentials.');
