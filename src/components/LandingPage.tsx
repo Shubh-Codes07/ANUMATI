@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Shield, QrCode, ClipboardList, Zap, Users, 
   ArrowRight, ShieldCheck, Clock, MapPin, X, Lock, 
-  User as UserIcon, Mail, Key, Phone 
+  User as UserIcon, Mail, Key, Phone, Eye, EyeOff
 } from 'lucide-react';
 import { AuthService } from '../lib/authService';
 import OTPRegistration from './OTPRegistration';
@@ -140,6 +140,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
   const [otpStep, setOtpStep] = useState<'pending' | null>(null);
   const [pendingSignupRole, setPendingSignupRole] = useState('student');
   const [showTeam, setShowTeam] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRoleSelect = (role: string) => {
     if (role === 'warden' || role === 'admin' || role === 'guard') {
@@ -375,13 +376,20 @@ export default function LandingPage({ onStart }: LandingPageProps) {
                     <div className="relative">
                       <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
                       <input 
-                        type="password" 
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="Master Password" 
                         required
                         value={formData.password}
                         onChange={e => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 focus:border-brand outline-none transition-all placeholder:text-white/10"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-14 focus:border-brand outline-none transition-all placeholder:text-white/10"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
                     </div>
                   </div>
 
