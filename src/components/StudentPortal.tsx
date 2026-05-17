@@ -62,8 +62,6 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
     return () => unsubscribe();
   }, [user.id]);
 
-  const activePass = history.find(req => req.status === 'approved' || req.status === 'active');
-
   const studentStats = {
     total: history.length,
     approved: history.filter(r => r.status === 'approved' || r.status === 'active' || r.status === 'completed').length,
@@ -180,62 +178,6 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
           <p className="text-xl font-black italic tracking-tighter text-red-500/80">{studentStats.rejected}</p>
         </div>
       </div>
-
-      {/* Active Pass Card */}
-      <AnimatePresence>
-        {activePass ? (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-brand/20 to-transparent pointer-events-none" />
-            <div className="glass p-6 rounded-[2.5rem] border-brand/20 relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
-                    <CheckCircle2 className="text-brand w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-[#00E5FF] font-black italic">Active Authority</p>
-                    <p className="text-xl font-black tracking-tighter uppercase">{activePass.status} Pass</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-black text-white/40 uppercase italic">Ends {activePass.endDate}</span>
-              </div>
-
-              <div className="flex gap-4 mb-6 text-center">
-                <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/5">
-                  <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Departure</p>
-                  <p className="text-xs font-black italic uppercase">{activePass.startDate}</p>
-                </div>
-                <div className="flex-1 bg-white/5 rounded-2xl p-4 border border-white/5">
-                  <p className="text-[9px] text-white/20 uppercase font-black tracking-widest mb-1">Return</p>
-                  <p className="text-xs font-black italic uppercase">{activePass.endDate}</p>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setShowQR(activePass.qrCode || activePass.id)}
-                className="w-full bg-white text-black font-black uppercase py-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform tracking-widest text-sm"
-              >
-                <QrCode className="w-5 h-5" /> Scan at Gate
-              </button>
-            </div>
-          </motion.div>
-        ) : (
-          <div className="glass p-8 rounded-[2.5rem] text-center border-dashed border-2 border-white/10 opacity-60">
-            <p className="text-sm font-medium text-white/40">No active gate-pass found.</p>
-            <button 
-              onClick={() => setShowApplyModal(true)}
-              className="mt-4 text-brand font-black uppercase text-[10px] tracking-widest"
-            >
-              + Apply New Request
-            </button>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Quick Actions */}
       <div>
@@ -401,11 +343,11 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                   <div className="grid grid-cols-2 gap-4 mb-4 bg-white/[0.02] p-3 rounded-2xl border border-white/5">
                     <div>
                       <p className="text-[8px] text-white/20 uppercase font-black">Departure Date</p>
-                      <p className="text-xs font-bold text-white/80">{leave.startDate}</p>
+                      <p className="text-xs font-bold text-white/80">{leave.startDate.split('T')[0]}</p>
                     </div>
                     <div>
                       <p className="text-[8px] text-white/20 uppercase font-black">Expected Return</p>
-                      <p className="text-xs font-bold text-white/80">{leave.endDate}</p>
+                      <p className="text-xs font-bold text-white/80">{leave.endDate.split('T')[0]}</p>
                     </div>
                   </div>
                   <div className="pt-4 border-t border-white/5 flex justify-between items-center">
