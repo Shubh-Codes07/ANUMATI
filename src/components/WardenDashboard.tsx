@@ -48,6 +48,13 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
     loadSecurityLogs();
   }, [activeTab]);
 
+  // Load data on initial component mount
+  React.useEffect(() => {
+    loadStudents();
+    loadRequests();
+    loadSecurityLogs();
+  }, []);
+
   const loadSecurityLogs = async () => {
     try {
       const logs = await LeaveService.getSecurityLogs();

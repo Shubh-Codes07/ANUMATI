@@ -524,14 +524,22 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                 <button 
                   onClick={async () => {
                     setIsSubmitting(true);
-                    const { UserService } = await import('../lib/userService');
-                    const updatedUser = await UserService.updateUser(user.id, profileData);
-                    if (updatedUser) {
-                      const { AuthService } = await import('../lib/authService');
-                      AuthService.updateCurrentUser(updatedUser);
+                    try {
+                      const { UserService } = await import('../lib/userService');
+                      const updatedUser = await UserService.updateUser(user.id, profileData);
+                      if (updatedUser) {
+                        const { AuthService } = await import('../lib/authService');
+                        AuthService.updateCurrentUser(updatedUser);
+                        alert('✅ Profile updated successfully! Changes will sync to Warden Dashboard.');
+                        setShowProfileEdit(false);
+                      } else {
+                        alert('❌ Failed to update profile. Please try again.');
+                      }
+                    } catch (error) {
+                      alert('❌ Error updating profile: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                    } finally {
+                      setIsSubmitting(false);
                     }
-                    setIsSubmitting(false);
-                    setShowProfileEdit(false);
                   }}
                   className="w-full bg-brand text-dark font-black uppercase py-6 rounded-3xl tracking-[0.2em] text-sm mt-4 shadow-[0_10px_30px_rgba(59,130,246,0.2)]"
                   disabled={isSubmitting}
