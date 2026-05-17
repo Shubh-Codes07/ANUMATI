@@ -24,6 +24,8 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
   const [history, setHistory] = useState<LeaveRequest[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [emergencyQR, setEmergencyQR] = useState<string | null>(null);
+  const [isEmergencyLoading, setIsEmergencyLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileData, setProfileData] = useState({
@@ -65,6 +67,23 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
     total: history.length,
     approved: history.filter(r => r.status === 'approved' || r.status === 'active' || r.status === 'completed').length,
     rejected: history.filter(r => r.status === 'rejected').length
+  };
+
+  const handleMedicalEmergency = async () => {
+    if (!confirm('⚠️ Trigger MEDICAL EMERGENCY EXIT?\n\nThis will immediately generate an approved gate pass. Only use in a real emergency.')) return;
+    setIsEmergencyLoading(true);
+    try {
+      const result = await LeaveService.triggerMedicalEmergency(
+        user.id,
+        user.name,
+        user.roomNumber || 'N/A'
+      );
+      setEmergencyQR(result.qrCode || result.id);
+    } catch (err: any) {
+      alert('Emergency request failed: ' + (err?.message || 'Unknown error'));
+    } finally {
+      setIsEmergencyLoading(false);
+    }
   };
 
   const handleApplyLeave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -214,6 +233,27 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
             <span className="text-sm font-semibold">ID QR Code</span>
           </button>
         </div>
+
+        {/* Medical Emergency Button */}
+        <button
+          onClick={handleMedicalEmergency}
+          disabled={isEmergencyLoading}
+          className="mt-4 w-full relative overflow-hidden group bg-red-600 hover:bg-red-500 disabled:opacity-60 text-white font-black uppercase py-5 rounded-3xl flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(239,68,68,0.4)] hover:shadow-[0_0_50px_rgba(239,68,68,0.6)] transition-all tracking-widest text-sm border border-red-500/50"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-red-700/0 via-red-400/20 to-red-700/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+          {isEmergencyLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Activating Emergency...</span>
+            </>
+          ) : (
+            <>
+              <AlertCircle className="w-5 h-5 animate-pulse" />
+              <span>Medical Emergency</span>
+              <AlertCircle className="w-5 h-5 animate-pulse" />
+            </>
+          )}
+        </button>
       </div>
 
       {/* Recent Activity */}
@@ -716,6 +756,81 @@ export default function StudentPortal({ onBack, user }: StudentPortalProps) {
                 className="w-full bg-dark text-white font-black uppercase py-4 rounded-2xl tracking-widest text-xs"
               >
                 Close ID
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── Medical Emergency QR Modal ───────────────────────────────────── */}
+      <AnimatePresence>
+        {emergencyQR && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] bg-red-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-6"
+          >
+            {/* Pulsing ring */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[500px] h-[500px] rounded-full border-2 border-red-500/20 animate-ping" />
+            </div>
+
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', damping: 20 }}
+              className="relative z-10 w-full max-w-sm text-center"
+            >
+              {/* Emergency badge */}
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <AlertCircle className="w-8 h-8 text-red-400 animate-pulse" />
+                <div>
+                  <p className="text-red-400 font-black uppercase tracking-[0.3em] text-[10px]">System Override Active</p>
+                  <h2 className="text-3xl font-black uppercase italic tracking-tighter text-white leading-none">Medical Emergency</h2>
+                </div>
+                <AlertCircle className="w-8 h-8 text-red-400 animate-pulse" />
+              </div>
+
+              <p className="text-red-300/70 text-xs font-bold uppercase tracking-widest mb-6">
+                Show this QR to the security guard immediately
+              </p>
+
+              {/* QR Code */}
+              <div className="bg-white p-6 rounded-[2.5rem] mb-6 shadow-[0_0_60px_rgba(239,68,68,0.5)] border-4 border-red-500">
+                <QRCode value={`GF-PASS-${emergencyQR}`} size={230} fgColor="#991b1b" />
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <p className="text-[9px] text-red-900 font-black uppercase tracking-widest">Emergency Pass Active</p>
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                </div>
+              </div>
+
+              {/* Student info */}
+              <div className="glass border border-red-500/30 rounded-3xl p-5 mb-6 text-left space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-black text-red-400/60 uppercase tracking-widest">Student</span>
+                  <span className="text-sm font-black text-white uppercase italic">{user.name}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-black text-red-400/60 uppercase tracking-widest">Room</span>
+                  <span className="text-sm font-black text-white uppercase italic">{user.roomNumber || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-black text-red-400/60 uppercase tracking-widest">Type</span>
+                  <span className="text-sm font-black text-red-400 uppercase italic">Medical Emergency</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-black text-red-400/60 uppercase tracking-widest">Auth</span>
+                  <span className="text-[10px] font-black text-green-400 uppercase">✓ Auto-Approved</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setEmergencyQR(null)}
+                className="w-full bg-white/10 border border-white/20 text-white/60 font-black uppercase py-4 rounded-2xl tracking-widest text-xs hover:bg-white/20 transition-all"
+              >
+                Close Emergency Pass
               </button>
             </motion.div>
           </motion.div>

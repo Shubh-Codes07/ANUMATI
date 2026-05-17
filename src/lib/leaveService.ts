@@ -18,6 +18,36 @@ export const LeaveService = {
     }
   },
 
+  // Medical Emergency: bypass approval, insert as immediately approved
+  async triggerMedicalEmergency(studentId: string, studentName: string, studentRoom: string) {
+    const today = new Date().toISOString().split('T')[0];
+    const qrCode = `ANUMATI-EMERGENCY-${studentId}-${Date.now()}`;
+    const payload = {
+      studentId,
+      studentName,
+      studentRoom,
+      type: 'Medical Emergency',
+      startDate: today,
+      endDate: today,
+      reason: 'Emergency Bypass — Auto-Approved',
+      status: 'approved',
+      appliedAt: new Date().toISOString(),
+      appliedBy: 'student',
+      approvedBy: 'SYSTEM-EMERGENCY',
+      qrCode,
+    };
+    const response = await fetch(API_URL + '/leaves', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Emergency bypass failed. Please try again.');
+    }
+    return await response.json() as LeaveRequest;
+  },
+
   async getMyRequests(studentId: string) {
     try {
       const response = await fetch(API_URL + '/leaves?studentId=' + studentId);
