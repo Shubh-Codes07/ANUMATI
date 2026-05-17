@@ -190,18 +190,23 @@ app.put('/api/users/:id', async (req, res) => {
     const { id } = req.params;
     const updates = req.body || {};
 
-    const allowedFields = ['avatar', 'name', 'phone', 'usn', 'roomNumber', 'address', 'department', 'parentPhone'];
+    // Whitelist ONLY valid database columns that can be updated
+    const allowedFields = ['avatar', 'name', 'phone', 'usn', 'roomNumber', 'address', 'department', 'hostelBlock'];
+    
     const filteredUpdates = Object.entries(updates)
       .filter(([key]) => allowedFields.includes(key))
       .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
 
     const keys = Object.keys(filteredUpdates);
 
-    console.log(`📝 Update request for user ${id}:`, Object.keys(updates), 'filtered to:', keys);
+    console.log(`📝 Update request for user ${id}:`);
+    console.log(`   Received fields:`, Object.keys(updates));
+    console.log(`   Blocked fields:`, Object.keys(updates).filter(k => !allowedFields.includes(k)));
+    console.log(`   Allowed fields:`, keys);
 
     if (keys.length === 0) {
-      console.log(`⚠️ No updatable fields provided for user ${id}`);
-      return res.status(400).json({ error: 'No valid fields to update' });
+      console.log(`⚠️ No valid updatable fields provided for user ${id}`);
+      return res.status(400).json({ error: 'No valid fields to update. Blocked: uid, id, role, email, parentPhone' });
     }
 
     const setClause = keys.map(k => `${k} = ?`).join(', ');
