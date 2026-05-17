@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { X, Github, Linkedin, Mail } from 'lucide-react';
+import { X, Github, Linkedin, Instagram } from 'lucide-react';
 
 interface TeamSectionProps {
   onClose: () => void;
@@ -11,33 +11,37 @@ const teamMembers = [
     name: 'Shubham R Patil',
     role: 'Lead Developer / Architect',
     branch: 'Info Science & Eng (2nd Year)',
-    bio: 'The Architect. Turning sleepless nights into seamless code. Engineered the core RBAC security and routing protocols.',
+    bio: 'Built the core backend logic, security protocols, and database architecture.',
     image: '/srp.jpg',
-    background: '/srpbg.jpg'
+    background: '/srpbg.jpg',
+    instagram: 'https://www.instagram.com/shuboy.022?igsh=MWIwNmk3OXlpYmJyNA==' // <-- Paste your actual IG link here
   },
   {
     name: 'Swayam V Rajai',
     role: 'System Optimization',
     branch: 'Mechanical Eng (2nd Year)',
-    bio: 'The Optimizer. Bringing mechanical precision to software execution. Ensuring the backend scales flawlessly under peak gate traffic.',
+    bio: 'Ensured system scalability, seamless performance, and database optimization.',
     image: '/svr.jpg',
-    background: '/svrbg.jpg'
+    background: '/svrbg.jpg',
+    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Swayam's IG link here
   },
   {
     name: 'Tanisha G Shinde',
     role: 'Product & UX Design',
     branch: 'Mechanical Eng (2nd Year)',
-    bio: 'The Visionary. Designing user flows so smooth they feel frictionless. Mapped the visual identity and interaction states.',
+    bio: 'Designed the intuitive user interface and smooth interactive frontend experience.',
     image: '/tgs.jpg',
-    background: '/tgsbg.jpg'
+    background: '/tgsbg.jpg',
+    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Tanisha's IG link here
   },
   {
     name: 'Supriya A Kusabikal',
     role: 'Hardware/Software Integration',
     branch: 'Electronics & Comm (2nd Year)',
-    bio: 'The Integrator. Bridging the gap between physical gates and digital packets. Managed the scanner logic and data payloads.',
+    bio: 'Integrated the QR scanning system and managed the digital-to-physical gate workflow.',
     image: '/sak.jpg',
-    background: '/sakbg.jpg'
+    background: '/sakbg.jpg',
+    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Supriya's IG link here
   }
 ];
 
@@ -120,7 +124,15 @@ export default function TeamSection({ onClose }: TeamSectionProps) {
               <div className="flex gap-4 mt-8 opacity-0 group-hover:opacity-100 transition-opacity">
                 <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand transition-all"><Github className="w-4 h-4" /></a>
                 <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand transition-all"><Linkedin className="w-4 h-4" /></a>
-                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand transition-all"><Mail className="w-4 h-4" /></a>
+                {/* 🚨 Updated to use the imported Instagram icon and added target="_blank" so it opens safely in a new tab */}
+                <a 
+                  href={member.instagram} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-brand transition-all"
+                >
+                  <Instagram className="w-4 h-4" />
+                </a>
               </div>
             </motion.div>
           ))}
