@@ -32,6 +32,15 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
+// ─── Health Checks (Fixes the Render 404 Error) ────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Anumati Backend is live!' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', server: 'Anumati Backend', time: new Date() });
+});
+
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', server: 'Anumati Backend', port: process.env.PORT || 3001 });
