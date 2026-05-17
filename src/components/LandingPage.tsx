@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Shield, QrCode, ClipboardList, Bell, Zap, Users, 
+  Shield, QrCode, ClipboardList, Zap, Users, 
   ArrowRight, ShieldCheck, Clock, MapPin, X, Lock, 
   User as UserIcon, Mail, Key, Phone 
 } from 'lucide-react';
@@ -19,6 +19,11 @@ const VideoIntro = ({ onFinish }: { onFinish: () => void }) => {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('0:00');
   const [duration, setDuration] = useState('0:00');
+
+  const handleVideoEnd = () => {
+    sessionStorage.setItem('videoPlayed', 'true');
+    onFinish();
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -74,7 +79,7 @@ const VideoIntro = ({ onFinish }: { onFinish: () => void }) => {
           src="/Entrance.mp4" 
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
-          onEnded={onFinish}
+          onEnded={handleVideoEnd}
           autoPlay
           playsInline
           className="w-full h-full"
@@ -120,7 +125,10 @@ const ClockDisplay = () => {
 };
 
 export default function LandingPage({ onStart }: LandingPageProps) {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    // Check if video has already been played in this session
+    return sessionStorage.getItem('videoPlayed') !== 'true';
+  });
   const [authModal, setAuthModal] = useState<{ 
     role: string; 
     step: 1 | 2; 
@@ -660,10 +668,14 @@ export default function LandingPage({ onStart }: LandingPageProps) {
             <span className="text-xl font-display font-bold tracking-tight">ANU<span className="text-brand">MATI</span></span>
           </div>
           <p className="text-gray-500 text-sm">© 2026 Tech Torque. All rights reserved.</p>
-          <div className="flex gap-6 text-gray-400">
-            <Users onClick={() => setShowTeam(true)} className="w-5 h-5 cursor-pointer hover:text-brand transition-colors" />
-            <ClipboardList className="w-5 h-5 cursor-pointer hover:text-brand transition-colors" />
-            <Bell className="w-5 h-5 cursor-pointer hover:text-brand transition-colors" />
+          <div className="flex gap-6 items-center">
+            <button 
+              onClick={() => setShowTeam(true)}
+              className="text-xl font-bold px-8 py-4 bg-blue-600 hover:bg-blue-700 transform hover:scale-105 transition-all rounded-lg text-white"
+            >
+              The Team
+            </button>
+            <ClipboardList className="w-5 h-5 cursor-pointer hover:text-brand transition-colors text-gray-400" />
           </div>
         </div>
       </footer>

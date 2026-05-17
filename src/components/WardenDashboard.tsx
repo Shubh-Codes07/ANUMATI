@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Users, ClipboardList, AlertCircle, Search, Filter, 
   CheckCircle2, XCircle, MoreVertical, LayoutDashboard,
-  LogOut, Bell, Settings, PieChart, Database, MapPin, 
+  LogOut, Settings, PieChart, Database, MapPin, 
   ShieldCheck, Plus, UserCircle, Phone, Home, Building
 } from 'lucide-react';
 import { 
@@ -401,10 +401,6 @@ export default function WardenDashboard({ onBack, user }: WardenDashboardProps) 
             <button onClick={() => setShowScanner(true)} className="bg-white text-black px-4 py-2 rounded-2xl font-black">Scan</button>
             <button onClick={onBack} className="w-12 h-12 glass rounded-2xl flex items-center justify-center text-red-400 hover:bg-red-500/10 transition-all hover:text-red-500">
               <LogOut className="w-5 h-5" />
-            </button>
-            <button className="w-12 h-12 glass rounded-2xl flex items-center justify-center relative hidden sm:flex">
-              <Bell className="w-5 h-5 text-gray-400" />
-              <div className="absolute top-3 right-3 w-2 h-2 bg-brand rounded-full" />
             </button>
           </div>
         </header>
