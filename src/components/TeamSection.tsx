@@ -14,6 +14,8 @@ const teamMembers = [
     bio: 'Built the core backend logic, security protocols, and database architecture.',
     image: '/srp.jpg',
     background: '/srpbg.jpg',
+    Github: 'https://github.com/Shubh-Codes07/ANUMATI'
+    Linkdin: 'https://www.linkedin.com/in/shubham-patil-a409b8343?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app'
     instagram: 'https://www.instagram.com/shuboy.022?igsh=MWIwNmk3OXlpYmJyNA==' // <-- Paste your actual IG link here
   },
   {
@@ -23,7 +25,7 @@ const teamMembers = [
     bio: 'Ensured system scalability, seamless performance, and database optimization.',
     image: '/svr.jpg',
     background: '/svrbg.jpg',
-    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Swayam's IG link here
+    instagram: 'https://www.instagram.com/swayam_rajai_?igsh=N3Rpemx1bWhmancx' // <-- Paste Swayam's IG link here
   },
   {
     name: 'Tanisha G Shinde',
@@ -32,7 +34,7 @@ const teamMembers = [
     bio: 'Designed the intuitive user interface and smooth interactive frontend experience.',
     image: '/tgs.jpg',
     background: '/tgsbg.jpg',
-    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Tanisha's IG link here
+    instagram: 'https://www.instagram.com/tanisha_shinde27?igsh=MzR2aHQwam5qamps' // <-- Paste Tanisha's IG link here
   },
   {
     name: 'Supriya A Kusabikal',
@@ -41,7 +43,7 @@ const teamMembers = [
     bio: 'Integrated the QR scanning system and managed the digital-to-physical gate workflow.',
     image: '/sak.jpg',
     background: '/sakbg.jpg',
-    instagram: 'https://instagram.com/your_ig_handle_here' // <-- Paste Supriya's IG link here
+    instagram: 'https://www.instagram.com/supriya_kusabikal?igsh=OWpzdWI0bzVnYmEy' // <-- Paste Supriya's IG link here
   }
 ];
 
