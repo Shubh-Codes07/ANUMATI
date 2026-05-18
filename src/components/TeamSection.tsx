@@ -25,7 +25,7 @@ const teamMembers = [
     bio: 'Ensured system scalability, seamless performance, and database optimization.',
     image: '/svr.jpg',
     background: '/svrbg.jpg',
-    instagram: 'https://www.instagram.com/swayam_rajai_?igsh=N3Rpemx1bWhmancx' // <-- Paste Swayam's IG link here
+    instagram: 'https://www.instagram.com/swayam_rajai_?igsh=N3Rpemx1bWhmancx==' // <-- Paste Swayam's IG link here
   },
   {
     name: 'Tanisha G Shinde',
@@ -34,7 +34,7 @@ const teamMembers = [
     bio: 'Designed the intuitive user interface and smooth interactive frontend experience.',
     image: '/tgs.jpg',
     background: '/tgsbg.jpg',
-    instagram: 'https://www.instagram.com/tanisha_shinde27?igsh=MzR2aHQwam5qamps' // <-- Paste Tanisha's IG link here
+    instagram: 'https://www.instagram.com/tanisha_shinde27?igsh=MzR2aHQwam5qamps==' // <-- Paste Tanisha's IG link here
   },
   {
     name: 'Supriya A Kusabikal',
@@ -43,7 +43,7 @@ const teamMembers = [
     bio: 'Integrated the QR scanning system and managed the digital-to-physical gate workflow.',
     image: '/sak.jpg',
     background: '/sakbg.jpg',
-    instagram: 'https://www.instagram.com/supriya_kusabikal?igsh=OWpzdWI0bzVnYmEy' // <-- Paste Supriya's IG link here
+    instagram: 'https://www.instagram.com/supriya_kusabikal?igsh=OWpzdWI0bzVnYmEy==' // <-- Paste Supriya's IG link here
   }
 ];
 
